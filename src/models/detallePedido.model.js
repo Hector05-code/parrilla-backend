@@ -9,7 +9,13 @@ const obtenerDetallePorId = (id, callback) => {
 };
 
 const obtenerDetallesPorPedido = (id_pedido, callback) => {
-    db.query('SELECT * FROM detalle_pedido WHERE id_pedidos = ?', [id_pedido], callback);
+    const sql = `
+        SELECT d.*, p.nombre, p.tipo 
+        FROM detalle_pedido d
+        JOIN producto p ON d.id_producto = p.id_producto
+        WHERE d.id_pedidos = ?
+    `;
+    db.query(sql, [id_pedido], callback);
 };
 
 const crearDetalle = (datos, callback) => {

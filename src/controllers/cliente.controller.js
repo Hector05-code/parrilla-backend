@@ -39,4 +39,13 @@ const eliminarCliente = (req, res) => {
     });
 };
 
-module.exports = { listarClientes, obtenerCliente, crearCliente, actualizarCliente, eliminarCliente };
+const buscarPorCedula = (req, res) => {
+    const { cedula } = req.params;
+    Cliente.buscarClientePorCedula(cedula, (err, results) => {
+        if (err) return res.status(500).json(err);
+        if (results.length === 0) return res.status(404).json({ mensaje: 'Cliente no encontrado' });
+        res.json(results[0]);
+    });
+};
+
+module.exports = { listarClientes, obtenerCliente, crearCliente, actualizarCliente, eliminarCliente, buscarPorCedula };

@@ -28,4 +28,12 @@ const soloCliente = (req, res, next) => {
     next();
 };
 
-module.exports = { verificarToken, soloAdmin, soloCliente };
+// ← AGREGÁ ESTO
+const soloEmpleado = (req, res, next) => {
+    if (!['admin', 'empleado'].includes(req.usuario.rol)) {
+        return res.status(403).json({ mensaje: 'Acceso no autorizado' });
+    }
+    next();
+};
+
+module.exports = { verificarToken, soloAdmin, soloCliente, soloEmpleado };

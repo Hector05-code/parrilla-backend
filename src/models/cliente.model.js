@@ -29,4 +29,9 @@ const eliminarCliente = (id, callback) => {
     db.query('DELETE FROM clientes WHERE id_clientes = ?', [id], callback);
 };
 
-module.exports = { obtenerClientes, obtenerClientePorId, crearCliente, actualizarCliente, eliminarCliente };
+const buscarClientePorCedula = (cedula, callback) => {
+    db.query('SELECT * FROM clientes WHERE cedula = ?', [cedula], callback);
+};
+
+module.exports = { obtenerClientes, obtenerClientePorId, crearCliente, actualizarCliente, eliminarCliente, buscarClientePorCedula };
+

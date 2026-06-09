@@ -1,11 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const clienteController = require('../controllers/cliente.controller');
+const { verificarToken, soloAdmin } = require('../middlewares/authMiddleware');
 
-router.get('/', clienteController.listarClientes);
-router.get('/:id', clienteController.obtenerCliente);
+router.get('/', verificarToken, soloAdmin, clienteController.listarClientes);
+router.get('/cedula/:cedula', verificarToken, clienteController.buscarPorCedula);
+router.get('/:id', verificarToken, clienteController.obtenerCliente);
 router.post('/', clienteController.crearCliente);
-router.put('/:id', clienteController.actualizarCliente);
-router.delete('/:id', clienteController.eliminarCliente);
+router.put('/:id', verificarToken, clienteController.actualizarCliente);
+router.delete('/:id', verificarToken, soloAdmin, clienteController.eliminarCliente);
 
 module.exports = router;

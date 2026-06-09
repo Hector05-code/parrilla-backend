@@ -10,8 +10,8 @@ const obtenerPedidoPorId = (id, callback) => {
 
 const crearPedido = (datos, callback) => {
     const sql = `
-        INSERT INTO pedidos (id_clientes, id_metodos_pago, fecha, total, total_bs, estado, referencia_pago, ref_foto)
-        VALUES (?, ?, NOW(), ?, ?, ?, ?, ?)
+        INSERT INTO pedidos (id_clientes, id_metodos_pago, fecha, total, total_bs, estado, referencia_pago, ref_foto, tipo_pedido, direccion)
+        VALUES (?, ?, NOW(), ?, ?, ?, ?, ?, ?, ?)
     `;
     db.query(sql, [
         datos.id_clientes,
@@ -20,17 +20,30 @@ const crearPedido = (datos, callback) => {
         datos.total_bs || 0,
         datos.estado,
         datos.referencia_pago,
-        datos.ref_foto || null
+        datos.ref_foto || null,
+        datos.tipo_pedido || 'sitio',
+        datos.tipo_pedido === 'delivery' ? datos.direccion : null
     ], callback);
 };
 
 const actualizarPedido = (id, datos, callback) => {
     const sql = `
         UPDATE pedidos
-        SET id_clientes = ?, id_metodos_pago = ?, total = ?, total_bs = ?, estado = ?, referencia_pago = ?, ref_foto = ?
+        SET id_clientes = ?, id_metodos_pago = ?, total = ?, total_bs = ?, estado = ?, referencia_pago = ?, ref_foto = ?, tipo_pedido = ?, direccion = ?
         WHERE id_pedidos = ?
     `;
-    db.query(sql, [datos.id_clientes, datos.id_metodos_pago, datos.total, datos.total_bs, datos.estado, datos.referencia_pago, datos.ref_foto, id], callback);
+    db.query(sql, [
+        datos.id_clientes,
+        datos.id_metodos_pago,
+        datos.total,
+        datos.total_bs || 0,
+        datos.estado,
+        datos.referencia_pago,
+        datos.ref_foto || null,
+        datos.tipo_pedido || 'sitio',
+        datos.direccion || null,
+        id
+    ], callback);
 };
 
 const eliminarPedido = (id, callback) => {
@@ -39,6 +52,10 @@ const eliminarPedido = (id, callback) => {
 
 const obtenerPedidosPorCliente = (id_cliente, callback) => {
     db.query('SELECT * FROM pedidos WHERE id_clientes = ? ORDER BY fecha DESC', [id_cliente], callback);
+};
+
+const buscarClientePorCedula = (cedula, callback) => {
+    db.query('SELECT * FROM clientes WHERE cedula = ?', [cedula], callback);
 };
 
 module.exports = { obtenerPedidos, obtenerPedidoPorId, crearPedido, actualizarPedido, eliminarPedido, obtenerPedidosPorCliente };

@@ -1,4 +1,5 @@
 const Pedido = require('../models/pedido.model');
+const db = require('../config/db');  // ← AGREGÁ ESTA LÍNEA
 
 const listarPedidos = (req, res) => {
     Pedido.obtenerPedidos((err, results) => {
@@ -47,4 +48,20 @@ const obtenerPedidosCliente = (req, res) => {
     });
 };
 
-module.exports = { listarPedidos, obtenerPedido, crearPedido, actualizarPedido, eliminarPedido, obtenerPedidosCliente };
+const cambiarEstado = (req, res) => {
+    const { id } = req.params;
+    const { estado } = req.body;
+
+    const estadosValidos = ['pendiente', 'preparando', 'entregado', 'cancelado'];
+    if (!estadosValidos.includes(estado)) {
+        return res.status(400).json({ mensaje: 'Estado inválido' });
+    }
+
+    db.query('UPDATE pedidos SET estado = ? WHERE id_pedidos = ?', [estado, id], (err, result) => {
+        if (err) return res.status(500).json(err);
+        res.json({ mensaje: 'Estado actualizado' });
+    });
+};
+
+
+module.exports = { listarPedidos, obtenerPedido, crearPedido, actualizarPedido, eliminarPedido, obtenerPedidosCliente, cambiarEstado };
