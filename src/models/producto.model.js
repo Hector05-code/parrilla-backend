@@ -22,8 +22,26 @@ const actualizarProducto = (id, datos, callback) => {
     db.query(sql, [datos.nombre, datos.precio, datos.tipo, id], callback);
 };
 
+// producto.model.js - reemplazar solo la función eliminarProducto
+
 const eliminarProducto = (id, callback) => {
-    db.query('DELETE FROM producto WHERE id_producto = ?', [id], callback);
+    // 1. Eliminar de detalle_pedido
+    db.query('DELETE FROM detalle_pedido WHERE id_producto = ?', [id], (err) => {
+        if (err) return callback(err);
+
+        // 2. Eliminar de bebidas
+        db.query('DELETE FROM bebidas WHERE fk_producto_bebidas = ?', [id], (err) => {
+            if (err) return callback(err);
+
+            // 3. Eliminar de parrilla
+            db.query('DELETE FROM parrilla WHERE id_producto = ?', [id], (err) => {
+                if (err) return callback(err);
+
+                // 4. Finalmente eliminar el producto
+                db.query('DELETE FROM producto WHERE id_producto = ?', [id], callback);
+            });
+        });
+    });
 };
 
 module.exports = { obtenerProductos, obtenerProductoPorId, crearProducto, actualizarProducto, eliminarProducto };
